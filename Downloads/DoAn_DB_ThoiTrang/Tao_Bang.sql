@@ -29,11 +29,16 @@ CREATE TABLE NHACUNGCAP (
 );
 
 CREATE TABLE KHUYENMAI (
-    MaKM VARCHAR2(20) PRIMARY KEY,
+    MaKM VARCHAR2(20) PRIMARY KEY,        
     TenKM NVARCHAR2(100) NOT NULL,
+    PhanTramGiam NUMBER(5, 2) NOT NULL,   
+    GiaTriToiThieu NUMBER(18, 2) DEFAULT 0, 
+    GiamToiDa NUMBER(18, 2),              
     NgayBatDau DATE,
     NgayKetThuc DATE,
-    TrangThai NVARCHAR2(50)
+    SoLuotDung INTEGER DEFAULT 0,         
+    TrangThai NVARCHAR2(50),               
+    CONSTRAINT chk_phantram CHECK (PhanTramGiam > 0 AND PhanTramGiam <= 100)
 );
 
 -- ==========================================
@@ -74,6 +79,7 @@ CREATE TABLE SANPHAM (
     GiaBan NUMBER(18, 2) NOT NULL CHECK (GiaBan >= 0),
     SoLuongTon NUMBER DEFAULT 0,
     TrangThai NVARCHAR2(50),
+    HINHANH VARCHAR2(255), 
     CONSTRAINT fk_sp_dm FOREIGN KEY (MaDM) REFERENCES DANHMUC(MaDM),
     CONSTRAINT fk_sp_kho FOREIGN KEY (MaKho) REFERENCES KHOHANG(MaKho)
 );
@@ -114,17 +120,17 @@ CREATE TABLE PHIEUNHAP (
 
 CREATE TABLE DONHANG (
     MaDH VARCHAR2(20) PRIMARY KEY,
-    MaKH VARCHAR2(20),                -- Có thể NULL nếu khách vãng lai mua tại quầy
-    MaNV VARCHAR2(20) NOT NULL,       -- Nhân viên bán hàng hoặc nhân viên duyệt đơn
-    MaDC VARCHAR2(20),                -- Chỉ bắt buộc (NOT NULL) khi LoaiDon = 'ONLINE'
+    MaKH VARCHAR2(20),                
+    MaNV VARCHAR2(20) NOT NULL,       
+    MaDC VARCHAR2(20),                
     MaGiamGia VARCHAR2(20),
     LoaiDon NVARCHAR2(20) DEFAULT 'OFFLINE' CHECK (LoaiDon IN ('ONLINE', 'OFFLINE')),
     NgayDat DATE DEFAULT SYSDATE,
-    NgayGiaoDuKien DATE,              -- Chỉ dùng cho Online
-    TrangThai NVARCHAR2(50),          -- 'Hoàn thành', 'Chờ xử lý', 'Đang giao',...
+    NgayGiaoDuKien DATE,              
+    TrangThai NVARCHAR2(50),          
     TongTien NUMBER(18, 2) DEFAULT 0,
-    PhiShip NUMBER(18, 2) DEFAULT 0,  -- Offline mặc định là 0
-    HinhThucThanhToan NVARCHAR2(50),  -- 'Tiền mặt', 'Chuyển khoản', 'Thẻ'
+    PhiShip NUMBER(18, 2) DEFAULT 0,  
+    HinhThucThanhToan NVARCHAR2(50),  
     DiemThuong NUMBER DEFAULT 0,
     DiemSuDung NUMBER DEFAULT 0,
     GhiChu NVARCHAR2(255),
@@ -148,15 +154,6 @@ CREATE TABLE DANHGIA (
 -- ==========================================
 -- PHẦN 4: TẠO CÁC BẢNG MỨC 4 (CHI TIẾT N-N)
 -- ==========================================
-
-CREATE TABLE CHITIET_KHUYENMAI (
-    MaKM VARCHAR2(20) NOT NULL,
-    MaSP VARCHAR2(20) NOT NULL,
-    PhanTramGiam NUMBER(5, 2) CHECK (PhanTramGiam > 0 AND PhanTramGiam <= 100),
-    PRIMARY KEY (MaKM, MaSP),
-    CONSTRAINT fk_ctkm_km FOREIGN KEY (MaKM) REFERENCES KHUYENMAI(MaKM) ON DELETE CASCADE,
-    CONSTRAINT fk_ctkm_sp FOREIGN KEY (MaSP) REFERENCES SANPHAM(MaSP) ON DELETE CASCADE
-);
 
 CREATE TABLE CHITIET_GIOHANG (
     MaGH VARCHAR2(20) NOT NULL,
@@ -188,5 +185,3 @@ CREATE TABLE CHITIET_DONHANG (
     CONSTRAINT fk_ctdh_dh FOREIGN KEY (MaDH) REFERENCES DONHANG(MaDH) ON DELETE CASCADE,
     CONSTRAINT fk_ctdh_sp FOREIGN KEY (MaSP) REFERENCES SANPHAM(MaSP)
 );
-
-COMMIT;
