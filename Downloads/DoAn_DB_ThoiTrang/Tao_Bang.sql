@@ -123,7 +123,7 @@ CREATE TABLE DONHANG (
     MaKH VARCHAR2(20),                
     MaNV VARCHAR2(20),       
     MaDC VARCHAR2(20),                
-    MaGiamGia VARCHAR2(20),
+    MaKM VARCHAR2(20),
     LoaiDon NVARCHAR2(20) DEFAULT 'OFFLINE' CHECK (LoaiDon IN ('ONLINE', 'OFFLINE')),
     NgayDat DATE DEFAULT SYSDATE,
     NgayGiaoDuKien DATE,              
